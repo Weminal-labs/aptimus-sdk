@@ -172,37 +172,21 @@ export class AptimusFlow {
       throw new Error("Missing JWT data");
     }
 
-    const aptosConfig = new AptosConfig({ network: Network.LOCAL });
+    const aptosConfig = new AptosConfig({ network: Network.TESTNET });
     const aptos = new Aptos(aptosConfig);
 
     const ephemeralKeyPair = EphemeralKeyPair.fromBytes(
       fromB64(this.$keylessSession.get().value?.ephemeralKeyPair as string)
     );
 
-    const pepper = await aptos.getPepper({
+    const keylessAccount = await aptos.deriveKeylessAccount({
       jwt,
       ephemeralKeyPair,
-    });
-
-    const proof = aptos.getProof({ jwt, ephemeralKeyPair, pepper });
-
-    const keylessAccount = KeylessAccount.create({
-      proof,
-      jwt,
-      ephemeralKeyPair,
-      pepper,
-      proofFetchCallback: async (res: ProofFetchStatus) => {
-        if (res.status === "Failed") {
-          console.error("Proof fetch failed");
-        } else {
-          console.log("Proof fetch success");
-        }
-      },
     });
 
     this.$keylessState.set({
       ...this.$keylessState.get(),
-      pepper: toB64(pepper), // base64
+      pepper: toB64(keylessAccount.pepper), // base64
       address: keylessAccount.accountAddress.toString(),
     });
     await this.setSession({

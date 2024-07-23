@@ -37,7 +37,7 @@ export const LoginPage = () => {
     if (!address) {
       throw new Error("Sender address is undefined");
     }
-    const aptosConfig = new AptosConfig({ network: Network.DEVNET });
+    const aptosConfig = new AptosConfig({ network: Network.TESTNET });
     const aptos = new Aptos(aptosConfig);
 
     const bobAccountAddress =
@@ -55,7 +55,7 @@ export const LoginPage = () => {
     console.log("Before sponsor transaction: ", transaction);
 
     const { sponsorSignedTransaction } = await flow.sponsorTransaction({
-      network: AptimusNetwork.DEVNET,
+      network: AptimusNetwork.TESTNET,
       transaction,
     });
 
@@ -66,7 +66,7 @@ export const LoginPage = () => {
     if (!address) {
       throw new Error("Sender address is undefined");
     }
-    const aptosConfig = new AptosConfig({ network: Network.DEVNET });
+    const aptosConfig = new AptosConfig({ network: Network.TESTNET });
     const aptos = new Aptos(aptosConfig);
 
     const bobAccountAddress =
@@ -97,13 +97,13 @@ export const LoginPage = () => {
     // });
 
     const executedTransaction = await flow.sponsorAndExecuteTransaction({
-      network: AptimusNetwork.DEVNET,
+      network: AptimusNetwork.TESTNET,
       transaction,
       aptos,
     });
 
     console.log(
-      `Transaction: https://explorer.aptoslabs.com/txn/${executedTransaction.hash}?network=${Network.DEVNET}`
+      `Transaction: https://explorer.aptoslabs.com/txn/${executedTransaction.hash}?network=${Network.TESTNET}`
     );
   };
 
