@@ -5,6 +5,9 @@ import { LoginPage } from "./LoginPage";
 import { CallbackPage } from "./CallbackPage";
 import { Homepage } from "./HomePage";
 import { AptimusFlowProvider } from "../src/react";
+import { Buffer } from 'buffer';
+
+window.Buffer = Buffer;
 
 const router = createBrowserRouter([
   {

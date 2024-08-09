@@ -45,6 +45,8 @@ export interface KeylessSession {
 
   jwt?: string;
   proof?: ZeroKnowledgeSig;
+
+  keylessAccount?: string; // base64
 }
 
 export type AuthProvider = "google" | "facebook" | "twitch";
@@ -189,9 +191,11 @@ export class AptimusFlow {
       pepper: toB64(keylessAccount.pepper), // base64
       address: keylessAccount.accountAddress.toString(),
     });
+
     await this.setSession({
       ...zkp,
       jwt,
+      keylessAccount: toB64(keylessAccount.bcsToBytes())
     });
 
     return params.get("state");
@@ -332,15 +336,17 @@ export class AptimusFlow {
       throw new Error("Missing required data for execution.");
     }
 
-    const jwt = zkp.jwt;
-    const ephemeralKeyPair = EphemeralKeyPair.fromBytes(
-      fromB64(zkp.ephemeralKeyPair)
-    );
+    // const jwt = zkp.jwt;
+    // const ephemeralKeyPair = EphemeralKeyPair.fromBytes(
+    //   fromB64(zkp.ephemeralKeyPair)
+    // );
+    const keylessAccount = KeylessAccount.fromBytes(fromB64(zkp.keylessAccount));
 
-    const keylessAccount = await aptos.deriveKeylessAccount({
-      jwt,
-      ephemeralKeyPair,
-    });
+    // NOTE: deriveKeylessAccount will call the prover API so it exceeds the rate limit
+    // const keylessAccount = await aptos.deriveKeylessAccount({
+    //   jwt,
+    //   ephemeralKeyPair,
+    // });
 
     const senderAuth = aptos.transaction.sign({
       signer: keylessAccount,
