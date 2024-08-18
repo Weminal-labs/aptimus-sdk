@@ -6,7 +6,6 @@ import {
   EphemeralKeyPair,
   KeylessAccount,
   Network,
-  ProofFetchStatus,
   SimpleTransaction,
   ZeroKnowledgeSig,
 } from "@aptos-labs/ts-sdk";
@@ -231,6 +230,7 @@ export class AptimusFlow {
       // TODO: Rather than having expiration act as a logout, we should keep the state that still is relevant,
       // and just clear out the expired session, but keep the other zkLogin state.
       if (state?.expiresAt && Date.now() > state.expiresAt) {
+        console.log("Expired. Logging out.");
         await this.logout();
       } else {
         this.$keylessSession.set({ initialized: true, value: state });
@@ -266,7 +266,7 @@ export class AptimusFlow {
       throw new Error("Missing required parameters for proof generation");
     }
 
-    const proof = await this.aptimusClient.createZkLoginZkp({
+    const proof = await this.aptimusClient.createKeylessZkp({
       network,
       jwt: zkp.jwt,
       ephemeralKeyPairBase64: zkp.ephemeralKeyPair,

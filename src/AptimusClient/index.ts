@@ -53,8 +53,8 @@ export class AptimusClient {
     this.apiKey = config.apiKey;
   }
 
-  createZkLoginZkp(input: CreateKeylessZkpApiInput) {
-    return this.fetch<CreateKeylessZkpApiResponse>("zklogin/zkp", {
+  createKeylessZkp(input: CreateKeylessZkpApiInput) {
+    return this.fetch<CreateKeylessZkpApiResponse>("keyless/zkp", {
       method: "POST",
       headers: {
         [KEYLESS_HEADER]: input.jwt,
