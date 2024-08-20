@@ -230,7 +230,6 @@ export class AptimusFlow {
       // TODO: Rather than having expiration act as a logout, we should keep the state that still is relevant,
       // and just clear out the expired session, but keep the other zkLogin state.
       if (state?.expiresAt && Date.now() > state.expiresAt) {
-        console.log("Expired. Logging out.");
         await this.logout();
       } else {
         this.$keylessSession.set({ initialized: true, value: state });
@@ -332,9 +331,10 @@ export class AptimusFlow {
     aptos: Aptos;
   }) {
     const zkp = await this.getSession();
-    if (!zkp || !zkp.jwt || !zkp.ephemeralKeyPair) {
-      throw new Error("Missing required data for execution.");
-    }
+    console.log("zkp", zkp);
+    // if (!zkp || !zkp.jwt || !zkp.ephemeralKeyPair) {
+    //   throw new Error("Missing required data for execution.");
+    // }
 
     // const jwt = zkp.jwt;
     // const ephemeralKeyPair = EphemeralKeyPair.fromBytes(
