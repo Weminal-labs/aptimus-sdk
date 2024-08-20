@@ -330,41 +330,45 @@ export class AptimusFlow {
     transaction: SimpleTransaction;
     aptos: Aptos;
   }) {
-    const zkp = await this.getSession();
-    console.log("zkp", zkp);
-    // if (!zkp || !zkp.jwt || !zkp.ephemeralKeyPair) {
-    //   throw new Error("Missing required data for execution.");
-    // }
+    try {
+      const zkp = await this.getSession();
+      console.log("zkp", zkp);
+      // if (!zkp || !zkp.jwt || !zkp.ephemeralKeyPair) {
+      //   throw new Error("Missing required data for execution.");
+      // }
 
-    // const jwt = zkp.jwt;
-    // const ephemeralKeyPair = EphemeralKeyPair.fromBytes(
-    //   fromB64(zkp.ephemeralKeyPair)
-    // );
-    const keylessAccount = KeylessAccount.fromBytes(fromB64(zkp.keylessAccount));
+      // const jwt = zkp.jwt;
+      // const ephemeralKeyPair = EphemeralKeyPair.fromBytes(
+      //   fromB64(zkp.ephemeralKeyPair)
+      // );
+      const keylessAccount = KeylessAccount.fromBytes(fromB64(zkp.keylessAccount));
 
-    // NOTE: deriveKeylessAccount will call the prover API so it exceeds the rate limit
-    // const keylessAccount = await aptos.deriveKeylessAccount({
-    //   jwt,
-    //   ephemeralKeyPair,
-    // });
+      // NOTE: deriveKeylessAccount will call the prover API so it exceeds the rate limit
+      // const keylessAccount = await aptos.deriveKeylessAccount({
+      //   jwt,
+      //   ephemeralKeyPair,
+      // });
 
-    const senderAuth = aptos.transaction.sign({
-      signer: keylessAccount,
-      transaction,
-    });
+      const senderAuth = aptos.transaction.sign({
+        signer: keylessAccount,
+        transaction,
+      });
 
-    const response = await aptos.transaction.submit.simple({
-      transaction,
-      senderAuthenticator: senderAuth,
-      feePayerAuthenticator,
-    });
+      const response = await aptos.transaction.submit.simple({
+        transaction,
+        senderAuthenticator: senderAuth,
+        feePayerAuthenticator,
+      });
 
-    // TODO: Should the parent just do this?
-    const executedTransaction = await aptos.waitForTransaction({
-      transactionHash: response.hash,
-    });
+      // TODO: Should the parent just do this?
+      const executedTransaction = await aptos.waitForTransaction({
+        transactionHash: response.hash,
+      });
 
-    return executedTransaction;
+      return executedTransaction;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async sponsorAndExecuteTransaction({
