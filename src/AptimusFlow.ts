@@ -223,6 +223,8 @@ export class AptimusFlow {
       const storedValue = this.store.get(this.storageKeys.SESSION);
       if (!storedValue) return null;
 
+      console.log("encryption key", this.encryptionKey);
+      console.log("storedValue", storedValue);
       const state: KeylessSession = JSON.parse(
         await this.encryption.decrypt(this.encryptionKey, storedValue)
       );
@@ -230,11 +232,14 @@ export class AptimusFlow {
       // TODO: Rather than having expiration act as a logout, we should keep the state that still is relevant,
       // and just clear out the expired session, but keep the other zkLogin state.
       if (state?.expiresAt && Date.now() > state.expiresAt) {
+        console.log("Logout");
         await this.logout();
       } else {
         this.$keylessSession.set({ initialized: true, value: state });
       }
-    } catch {
+    } catch(error) {
+      console.log("keyless session null");
+      console.log(error);
       this.$keylessSession.set({ initialized: true, value: null });
     }
 
