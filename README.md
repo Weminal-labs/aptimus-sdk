@@ -1,1 +1,1 @@
-# Aptimus SDK
+# @weminal/aptimus

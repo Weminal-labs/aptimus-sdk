@@ -25,7 +25,7 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <AptimusFlowProvider apiKey="enoki_apikey_ec23ee0a581fca24263243bc89f77bdf">
+    <AptimusFlowProvider apiKey="">
       <RouterProvider router={router} />
     </AptimusFlowProvider>
 );
