@@ -15,7 +15,9 @@ import {
   Network,
   SimpleTransaction,
 } from "@aptos-labs/ts-sdk";
-import { fromB64, toB64 } from "../src/utils";
+import { getAptosConfig } from "../src/utils";
+
+const network = AptimusNetwork.M1;
 
 export const LoginPage = () => {
   const flow = useAptimusFlow();
@@ -28,6 +30,7 @@ export const LoginPage = () => {
       clientId:
         "898060815188-os2kha196hocdsuqpjhao3r52d4k9tkk.apps.googleusercontent.com",
       redirectUrl: `${window.location.origin}/callback`,
+      network,
     });
     console.log(url);
     window.location.href = url.toString();
@@ -37,7 +40,7 @@ export const LoginPage = () => {
     if (!address) {
       throw new Error("Sender address is undefined");
     }
-    const aptosConfig = new AptosConfig({ network: Network.TESTNET });
+    const aptosConfig = getAptosConfig(network);
     const aptos = new Aptos(aptosConfig);
 
     const bobAccountAddress =
@@ -55,7 +58,7 @@ export const LoginPage = () => {
     console.log("Before sponsor transaction: ", transaction);
 
     const { sponsorSignedTransaction } = await flow.sponsorTransaction({
-      network: AptimusNetwork.TESTNET,
+      network: network,
       transaction,
     });
 
@@ -66,7 +69,7 @@ export const LoginPage = () => {
     if (!address) {
       throw new Error("Sender address is undefined");
     }
-    const aptosConfig = new AptosConfig({ network: Network.TESTNET });
+    const aptosConfig = getAptosConfig(network);
     const aptos = new Aptos(aptosConfig);
 
     const bobAccountAddress =
@@ -97,14 +100,33 @@ export const LoginPage = () => {
     // });
 
     const executedTransaction = await flow.sponsorAndExecuteTransaction({
-      network: AptimusNetwork.TESTNET,
+      network: network,
       transaction,
       aptos,
     });
 
     console.log(
+      `Transaction: https://explorer.movementlabs.xyz/${executedTransaction.hash}?network=${Network.TESTNET}`
+    );
+    console.log(
       `Transaction: https://explorer.aptoslabs.com/txn/${executedTransaction.hash}?network=${Network.TESTNET}`
     );
+  };
+
+  const executeTransaction = async () => {
+    if (!address) {
+      throw new Error("Sender address is undefined");
+    }
+    const aptosConfig = getAptosConfig(network);
+    const aptos = new Aptos(aptosConfig);
+
+    const bobAccount = Account.generate();
+
+    const res = await aptos.getAccountResources({
+      accountAddress: address
+    })
+
+    console.log("Account resources: ", res);
   };
 
   return (
@@ -118,6 +140,9 @@ export const LoginPage = () => {
           </button>
           <button onClick={createAndExecuteSponsoredTransaction}>
             Create and Execute sponsored Transaction
+          </button>
+          <button onClick={executeTransaction}>
+            Get Account Resources (see in console tab)
           </button>
         </>
       ) : (

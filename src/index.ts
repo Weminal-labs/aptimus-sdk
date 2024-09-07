@@ -12,3 +12,4 @@ export {
   type SyncStore,
 } from "./store";
 export { createDefaultEncryption, type Encryption } from "./encryption";
+export { getAptosConfig } from "./utils";

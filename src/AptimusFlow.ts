@@ -11,7 +11,7 @@ import {
 } from "@aptos-labs/ts-sdk";
 
 import { AptimusClient, AptimusClientConfig } from "./AptimusClient";
-import { fromB64, toB64 } from "./utils";
+import { fromB64, getAptosConfig, toB64 } from "./utils";
 import { SyncStore, createSessionStorage } from "./store";
 import { Encryption, createDefaultEncryption } from "./encryption";
 import { WritableAtom, atom, onMount, onSet } from "nanostores";
@@ -112,9 +112,14 @@ export class AptimusFlow {
     provider: AuthProvider;
     clientId: string;
     redirectUrl: string;
-    network?: Network.MAINNET | Network.TESTNET | Network.DEVNET;
+    network: AptimusNetwork.TESTNET | AptimusNetwork.M1;
   }) {
     const ephemeralKeyPair = EphemeralKeyPair.generate();
+
+    const state = JSON.stringify({
+      network: input.network,
+      // You can add any other custom state information here
+    });
 
     const params = new URLSearchParams({
       client_id: input.clientId,
@@ -122,6 +127,8 @@ export class AptimusFlow {
       response_type: "id_token",
       scope: "openid profile email",
       nonce: ephemeralKeyPair.nonce,
+      network: input.network,
+      state: btoa(state) // Base64 encode the state
     }).toString();
 
     let oauthUrl: string;
@@ -159,6 +166,8 @@ export class AptimusFlow {
       );
     }
 
+    let network = JSON.parse(atob(params.get("state"))).network;
+    console.log(network);
     const jwt = params.get("id_token");
     if (!jwt) {
       throw new Error("Missing ID Token");
@@ -173,7 +182,7 @@ export class AptimusFlow {
       throw new Error("Missing JWT data");
     }
 
-    const aptosConfig = new AptosConfig({ network: Network.TESTNET });
+    const aptosConfig = getAptosConfig(network as AptimusNetwork);
     const aptos = new Aptos(aptosConfig);
 
     const ephemeralKeyPair = EphemeralKeyPair.fromBytes(
@@ -237,7 +246,7 @@ export class AptimusFlow {
       } else {
         this.$keylessSession.set({ initialized: true, value: state });
       }
-    } catch(error) {
+    } catch (error) {
       console.log("keyless session null");
       console.log(error);
       this.$keylessSession.set({ initialized: true, value: null });

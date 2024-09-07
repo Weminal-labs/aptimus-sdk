@@ -4,6 +4,7 @@ export enum AptimusNetwork {
   MAINNET = "mainnet",
   TESTNET = "testnet",
   DEVNET = "devnet",
+  M1 = "m1",
 }
 
 export interface CreateKeylessZkpApiInput {
