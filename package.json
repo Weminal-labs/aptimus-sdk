@@ -39,6 +39,7 @@
     "@nanostores/react": "^0.7.2",
     "buffer": "^6.0.3",
     "jose": "^5.6.3",
+    "jsonwebtoken": "^9.0.2",
     "nanostores": "^0.10.3",
     "vite-plugin-mkcert": "^1.17.6"
   },
